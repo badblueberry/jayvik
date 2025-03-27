@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>几何课程表 | Geometric Schedule</title>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --silver: #C0C0C0;
+            --dark: #2A2A2A;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(45deg, var(--dark), #3A3A3A);
+            font-family: 'Arial', sans-serif;
+            color: var(--silver);
+        }
+
+        /* 几何背景图案 */
+        .geometric-bg {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                repeating-linear-gradient(45deg, 
+                    transparent, 
+                    transparent 10px,
+                    var(--gold) 11px,
+                    var(--gold) 20px),
+                repeating-linear-gradient(-45deg,
+                    transparent,
+                    transparent 10px,
+                    var(--silver) 11px,
+                    var(--silver) 20px);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        /* 课程表样式 */
+        .schedule {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            border: 2px solid var(--gold);
+        }
+
+        .schedule td {
+            border: 1px solid var(--silver);
+            padding: 15px;
+            background: rgba(42, 42, 42, 0.9);
+            vertical-align: top;
+            min-width: 180px;
+        }
+
+        .course-item a {
+            color: var(--silver);
+            text-decoration: none;
+            display: block;
+            margin: 5px 0;
+            transition: color 0.3s;
+        }
+
+        .course-item a:hover {
+            color: var(--gold);
+        }
+
+        /* 新实验 */
+          .time {
+            font-size: 0.9em;
+            color: #666;
+        }
+            .course {
+              font-weight: bold;
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(42, 42, 42, 0.95);
+            border: 2px solid var(--gold);
+            padding: 20px;
+            color: var(--silver);
+            max-width: 650px;
+        }
+
+        /* 语言切换按钮 */
+        .lang-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--dark);
+            color: var(--silver);
+            border: 1px solid var(--gold);
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="geometric-bg"></div>
+    <button class="lang-btn" onclick="toggleLanguage()">EN/中</button>
+
+    <table class="schedule">
+        <!-- 时间表结构 -->
+      <table border="1" style="width: 100%;">
+        <tr>
+            <th class="time-header"></th>
+            <th data-zh="星期一" data-en="Monday">星期一</th>
+            <th data-zh="星期二" data-en="Tuesday">星期二</th>
+            <th data-zh="星期三" data-en="Wednesday">星期三</th>
+            <th data-zh="星期四" data-en="Thursday">星期四</th>
+            <th data-zh="星期五" data-en="Friday">星期五</th>
+        </tr>
+        <!-- 添加时间行从8:30到18:00 -->
+          <tr>
+            <th data-zh="8:30" data-en="8:30">8:30</th>
+               <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('engineer')" 
+                   data-zh="工程力学" 
+                   data-en="Engineering Mechanics">工程力学</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                <a href="#" onclick="showMessage('sun')"
+                   data-zh="8:30 - 10:00" 
+                   data-en="8:30 - 10:00">8:30 - 10:00</a>
+                <a href="#" onclick="showMessage('lecture-362')"
+                   data-zh="白金讲堂 362号" 
+                   data-en="Platinum Hall 362">白金讲堂 362号</a>
+            </div>
+        </td>
+            <td></td><td></td>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('lookathim')" 
+                   data-zh="工程力学" 
+                   data-en="Engineering Mechanics">工程力学</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                 <div data-zh="8:30 - 10:00" data-en="8:30 - 10:00">8:30 - 10:00</div>
+                 <div data-zh="白金讲堂 362号" data-en="Platinum Hall 362">白金讲堂 362号</div>
+            </div>
+        </td>
+            <td></td>
+          </tr>
+          <tr>
+            <th data-zh="9:00" data-en="9:00">9:00</th>
+           <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('machi')" 
+                   data-zh="机械伦理哲学" 
+                   data-en="Philosophy of Mechanical Ethics">机械伦理哲学</a>
+                <a href="#" onclick="showMessage('discussion')"
+                   data-zh="讨论课" 
+                   data-en="Discussion">讨论课</a>
+                 <div data-zh="9:30 - 11:00" data-en="9:30 - 11:00">9:30 - 11:00</div>
+                 <div data-zh="白金讲堂 501号" data-en="Platinum Hall 501">白金讲堂 501号</div>
+            </div>
+        </td>
+            <td></td>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('lecture')" 
+                   data-zh="机械伦理哲学" 
+                   data-en="Philosophy of Mechanical Ethics">机械伦理哲学</a>
+                <a href="#" onclick="showMessage('lecture')"
+                   data-zh="讨论课" 
+                   data-en="Discussion">讨论课</a>
+                 <div data-zh="9:30 - 11:00" data-en="9:30 - 11:00">9:30 - 11:00</div>
+                 <div data-zh="白金讲堂 501号" data-en="Platinum Hall 501">白金讲堂 501号</div>
+            </div>
+        </td>
+          </tr>
+          <tr>
+            <th data-zh="10:00" data-en="10:00">10:00</th>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('art-course')" 
+                   data-zh="装饰艺术" 
+                   data-en="Decorative Art ">装饰艺术</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                <a href="#" onclick="showMessage('lunch')"
+                   data-zh="10:30 - 12:00" 
+                   data-en="10:30 - 12:00">10:30 - 12:00</a>
+                 <div data-zh="白金讲堂 279号" data-en="Platinum Hall 279">白金讲堂 279号</div>
+            </div>
+        </td>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('courseart')" 
+                   data-zh="装饰艺术" 
+                   data-en="Decorative Art">装饰艺术</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                 <div data-zh="10:30 - 12:00" data-en="10:30 - 12:00">10:30 - 12:00</div>
+                 <div data-zh="白金讲堂 279号" data-en="Platinum Hall 279">白金讲堂 279号</div>
+            </div>
+        </td>
+            <td></td>
+          </tr>
+          <tr>
+            <th data-zh="11:00" data-en="11:00">11:00</th>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="12:00" data-en="12:00">12:00</th>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="13:00" data-en="13:00">13:00</th>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('athe')" 
+                   data-zh="以太流体力学" 
+                   data-en="Aetheric Hydrodynamics">以太流体力学</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                 <div data-zh="13:30 - 15:00" data-en="13:30 - 15:00">13:30 - 15:00</div>
+                 <div data-zh="白金讲堂 203号" data-en="Platinum Hall 203">白金讲堂 203号</div>
+            </div>
+        </td>
+                <td rowspan="3" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('mathclass')" 
+                   data-zh="季风数学" 
+                   data-en="Monsoonal Mathematics">季风数学</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                <a href="#" onclick="showMessage('afternoon')" 
+                   data-zh="13:30 - 15:00" 
+                   data-en="13:30 - 15:00">13:30 - 15:00</a>
+                 <div data-zh="白金讲堂 175号" data-en="Platinum Hall 175">白金讲堂 175号</div>
+            </div>
+        </td>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="14:00" data-en="14:00">14:00</th>
+            <td></td>
+                <td rowspan="10" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('computer-course')" 
+                   data-zh="经典热力学" 
+                   data-en="Classical Thermodynamics">经典热力学</a>
+                <a href="#" onclick="showMessage('lecture')"
+                   data-zh="讲座" 
+                   data-en="Lecture">讲座</a>
+                 <div data-zh="14:00 - 19:00" data-en="14:00 - 19:00">14:00 - 19:00</div>
+                 <div data-zh="白金讲堂 1000号" data-en="Platinum Hall 1000">白金讲堂 1000号</div>
+            </div>
+        </td>
+            <td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="15:00" data-en="15:00">15:00</th>
+                <td rowspan="6" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('talk-pro')" 
+                   data-zh="机械设计基础" 
+                   data-en="Mechanical Design Basis">机械设计基础</a>
+                 <div data-zh="讲座" data-en="Lecture">讲座</div>
+                 <div data-zh="15:00 - 18:00" data-en="15:00 - 18:00">15:00 - 18:00</div>
+                 <div data-zh="白金讲堂 323号" data-en="Platinum Hall 323">白金讲堂 323号</div>
+            </div>
+        </td>
+            <td></td><td></td>
+                <td rowspan="6" class="course">
+            <div class="course-item">
+                <a href="#" onclick="showMessage('computer-course')" 
+                   data-zh="机械设计基础" 
+                   data-en="Mechanical Design Basis">机械设计基础</a>
+                <a href="#" onclick="showMessage('lecture')"
+                   data-zh="实验" 
+                   data-en="Laboratory">实验</a>
+                 <div data-zh="15:00 - 18:00" data-en="15:00 - 18:00">15:00 - 18:00</div>
+                 <div data-zh="机械设计实验室" data-en="Machine Design Lab">机械设计实验室</div>
+            </div>
+        </td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="16:00" data-en="16:00">16:00</th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="17:00" data-en="17:00">17:00</th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="18:00" data-en="18:00">18:00</th>
+            <td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <th data-zh="    " data-en="    ">    </th>
+            <td></td><td></td><td></td><td></td>
+          </tr>
+    </table>
+
+    <div id="infoModal" class="modal">
+        <div id="modalContent"></div>
+        <button onclick="closeModal()" data-zh="关闭" data-en="Close">关闭</button>
+    </div>
+
+    <script>
+        // 双语内容配置
+        const translations = {
+            "计算机课": "Computer Science",
+            "讲座": "Lecture",
+            "8:30-10:00": "8:30-10:00",
+            "白金大厅 136号": "Platinum Hall 136",
+            // 添加其他课程内容翻译...
+        };
+
+        // 留言内容配置
+        const messages = {
+            "engineer": [
+                "工程力学是一门与工程技术联系极为密切的技术基础课程，涉及领域包括航海学、建筑学、机械学、物质学、矿学和灾害学等。工程力学的定理、定律和结论广泛应用于皮尔特沃夫各行各业的工程技术中，且随时代不断发展。本课程旨在使学生了解力学学科的形成和发展史，尤其是波尔博克家族的卓越贡献；工程力学应用的重点领域；力学学科的主要学习目标和研究方法论。",
+                "——《工程力学导论》",
+                "     ",
+                "Engineering Mechanics is a fundamental technical discipline deeply interconnected with engineering applications, spanning diverse fields including nautical science, architecture, machinery, materials science, mineralogy, and disaster studies. The theorems, laws, and principles of engineering mechanics find broad applications across Piltover's industries and evolve continuously with technological advancements. This course aims to equip students with insights into the historical development of mechanics—notably the seminal contributions of the Bolbok Family—the discipline's priority domains of application, its core academic objectives, and established research methodologies.",
+                "——《Introduction to Engineering Mechanics》"
+            ],
+            // 添加其他留言...
+            "sun": [
+                "早晨八点钟。人们忙碌地在辉光闪烁的晶岩长廊中穿梭，从横亘于海岸旁的大理石拱门下小跑着过来，绕过学院门口柔光朦胧的石像，向彩色玻璃窗后镀色的人影挥手。到处是光。太阳的明光。尖塔的流光。喷泉的虹光。徽章的折光。光，美丽，辉煌，皮尔特沃夫。牙齿的光，眼珠的光，腕带上一闪而过的深蓝荧光。年轻人的笑容也是光彩夺目的。是的，你知道它就在上方，但有时候你惧怕直视。太阳，皮尔特沃夫，他。",
+                "     ",
+                "Eight o'clock morning. Through the glistening crystal corridors they flowed——hurrying past marble arches straddling the coastal promenade, circling stone statues suffused with hazy aureate glow at the academy gates, waving at gilded silhouettes behind stained glass. Light everywhere. The sun's radiance. The spires'gleam. The fountains'prismatic mist. The sigils'refracted brilliance. Light. Beauty. Splendor. Piltover. Pearlescent teeth-light. Ocular starbursts. The cerulean flicker of wristbands. Even the youths'laughter shone incandescent. Yes, you know it looms above—the sun; Piltover; him. Yet there are moments when you fear to lift your gaze."
+            ],
+            "lecture-362": [
+                "这是一座宽敞明亮、设计优美的讲堂。整体淡蓝色与银白色交织，朝阳的墙被一整面落地玻璃窗取代，光影相叠，映进的树形像是脱胎于蓝膜。讲堂四角线条笔直，锋利而不容置疑。中央整齐排布着四列带滚轮和银制夹钳的扶手椅，有时并非竖直排列，横着，或M形，或半圆形，总是对称的。具体要看这门课的助教和校工怎样突发奇想，他们才不管夹角处的倒霉学生是否坐在别人大腿之间的夹缝里。尽管这是皮尔特沃夫最神圣的讲堂，聚集的是世俗意义上的天之骄子，他们也时常沦为别人评估和装饰的对象。学生们面对着讲台和黑板。黑板的大小取决于讲堂大小。那上边什么都有，公式啦，作业啦，给某人起的外号啦。负责清理讲堂的助教们见识过所有张扬的留痕。有两种尚属有趣：手绘的符文大陆地图，完美得像印刷品。字迹优雅的座右铭，比如这句，Scientia ad Altiora——知识通向更高处。",
+                "     ",
+                "This is a spacious, luminous lecture hall with elegant design. Pale blue and silver dominate the space. Floor-to-ceiling windows replace the east wall, casting overlapping tree shadows through blue-tinted glass. Sharp, angular lines define all four corners. At the center stand four rows of wheeled armchairs with silver clamps - sometimes arranged vertically, sometimes M-shaped or semicircular, always symmetrical. Teaching assistants and janitors rearrange them whimsically, indifferent to students wedged between chair angles. Though Piltover's most sacred academic space gathers elite talents, they often become subjects of scrutiny or decoration. Students face the podium and blackboard (size proportionate to the hall). Scrawled formulas, assignments, nicknames cover the surface. TAs tasked with cleaning witness all graffiti. Two recurring types intrigue: flawless hand-drawn Runeterra maps resembling prints, and elegant mottos like “Scientia ad Altiora” – Knowledge Leads Higher."
+            ],
+            "art-course": [
+                "“装饰艺术，博大精深又扣人心弦的学问！你们曾经漫步于恕瑞玛的沙漠中吗？看着古老的神庙遗迹上遍布着神秘的花纹？你们亲眼看过瓦斯塔亚的原始文字吗？有些被刻在建材上，以求建筑永垂不朽。同学们啊，你们从没有经历过我这样的时代——”",
+                "<em>笔记",
+                "1/装饰艺术 博大精深 <s>扣人心</s>",
+                "2/恕瑞 瓦斯",
+                "3/青年时期花费15个月游览艾欧尼亚",
+                "天啊，我选这门课绝对是个错误",
+                "没有资料记载过那个魔法符号</em>",
+                "     ",
+                "Decorative arts—a vast and captivating discipline! Have you wandered Shurima's deserts? Witnessed ancient temple ruins adorned with cryptic patterns? Beheld the primal scripts of Vastaya? Some are carved into building materials to grant structures immortality. My dear students, you’ve never lived through times like mine—",
+                "<em>Notes",
+                "1/Decorative arts: Vast  <s>captiv</s>",
+                "2/SHURI  VAS",
+                "3/Spent 15 months traversing Ionia during his youth",
+                "take this course MISTAKE",
+                "No records exist of that magic symbol</em>"
+            ],
+            "lunch": [
+                "嘿艾达~等会去哪吃饭",
+                "食堂 凯丽 不然还能去哪",
+                "上次你不是说一进食堂就有股踩了死老鼠的味儿吗",
+                "我下午一点钟要继续上课 时间紧迫 我需要死老鼠",
+                "我要去街上逛逛 带鲜虾三明治给你~",
+                "哦哦哦哦哦你真好！！爱你♡",
+                "——来自揉皱的小纸条",
+                "     ",
+                "Hey Ada~ Where we gonna eat",
+                "Cafeteria Kaylee Where else",
+                "But last time you said it smells like squished rat poop inside",
+                "1 PM class incoming!! Need dead rat to eat",
+                "I'll grab fresh shrimp sandwiches downtown~",
+                "OMGGGG YOU ANGEL!!! TX♡",
+                "——From a crumpled piece of paper"
+            ],
+            "talk-pro": [
+                "“哦，哦！很高兴你能来，杰斯，请坐。咖啡？茶？都不？好的。嗯，我今天想和你谈谈项目作业的事情。你知道，我们学院一向鼓励创新，而你在这门课上表现出的创造性、主动性和卓越的天赋也令人印象深刻。你是名前途无量的学生，我得这么说，前提是珍惜羽毛。整天把精力放在超前，或者，不着边际的想象和不能实现的设计里，只会损耗你宝贵的天赋。从实际出发，从你那些精巧的工具里寻找灵感。年轻人都有改变世界的宏大愿望，我二十多岁时也这样。但是，杰斯，你还没有体会过。时间不等人——若无切实的成果，理想与天赋都将一文不值。”",
+                "     ",
+                "Ah, Jayce! How good of you to come. Do sit.Coffee? Tea? No? Very well.Now, regarding your project… The Academy prides itself on nurturing innovative spirits, and your work truly remarkable.But potential, my boy, is like quicksilver. Pour it into fanciful designs,and it dissipates into vapor. Ground your visions in practical tools.At your age, I too dreamed of bending the laws of physics. But time——time respects neither equations nor epiphanies."
+            ],
+            "machi": [
+                "“我不说废话。所有人听这个问题：如果你的挚爱失去了一条腿，你是否会用机械腿代替，以让之行动自如？赞成的举手。”",
+                "“很好，几乎全票通过。如果你的挚爱失去了整个下半身呢？”",
+                "“胸部以下的部位？”",
+                "“只剩头呢？”",
+                "<em>“教授，我就不能换个爱人吗？”（哄堂大笑）</em>",
+                "“当然，斯派克先生。一名和你残疾的挚爱长得一模一样，拥有完全相同的神态、记忆、动作习惯的，健康又活泼的爱人——机器制造。”",
+                "“有什么犹豫的？赞同就举手。”",
+                "<em>“那么我的爱人呢，他还活着吗？”</em>",
+                "“当然，莉娜小姐。但是和死了有什么区别？他没有智慧，不能爱。对你的触碰和爱抚，他不能做出任何反应。”",
+                "<em>“………………”</em>",
+                "<em>“教授，你让活人越来越靠近死亡，让金属越来越靠近血肉，以试探不同人的道德边界。对于这个故事，有一则基础事实：机器不能取代人的主体性，而爱情早已让人丧失了主体性。本是实现手段的，转而支配了人。尽管我并非爱情专家（哄笑声），但我认为，这是情感的矛盾，而非人与机械的矛盾。”</em>",
+                "“不错的发言。都听清楚了？你们的论点又是什么？15分钟讨论时间，现在开始。”",
+                "     ",
+                "I'll cut to the chase. First question: If your beloved lost a leg, would you replace it with a prosthetic limb to restore mobility? Raise hands if yes.",
+                "Excellent, unanimous approval. What if they lost the entire lower body?",
+                "Amputated above the waist?",
+                "Only the head remains?",
+                "<em>Professor, could I just get a new partner? (The classroom erupts in laughter)</em>",
+                "Certainly, Mr. Spike. A machine could craft an identical replacement—matching memories, mannerisms, micro-expressions. Vibrant and healthy.",
+                "Why hesitate? Raise hands in approval.",
+                "<em>But… what happens to my original lover? Does he still exist?</em>",
+                "Biologically alive, Miss Lena. Yet no different than death—no consciousness, no capacity to reciprocate affection. Your caresses would meet flesh as responsive as a corpse.",
+                "<em>…</em>",
+                "<em>Professor, you're testing moral boundaries by merging the dying with machinery and machinery with living tissue. But this premise is flawed: Machines can't replace human subjectivity, yet love itself erodes subjectivity. The means become the master. Though no love expert (scattered chuckles), I argue this is an emotional paradox, not man-versus-machine conflict.</em>",
+                "Well argued. Everyone catch that? Now defend your positions. Fifteen-minute discussion—begin."
+            ],
+            "discussion": [
+                "学术？科技？社会？文化？道德？环境？你可以在课堂上听到人类在短暂的神经突触传导中，于星火迸发的刹那，所诞生的知与不知、喜爱与憎恶、肯定与否定的一切。航海水手的社会福利？环骑车的升级改造与应用前景？诺克萨斯的外交倾向研究？祖安的地质？报刊业的兴衰？在讨论课上夺得先机的学生，大放异彩，极富魅力。他们有的能言善辩，有的巧舌如簧，有的则胡搅蛮缠。源源不断的词语在他们舌、齿、上颚与鼻腔的振动中涌现，在无形的碰撞中被赋予了思辨的意义。扭转另一个人根深蒂固的思维，比任何一场胜仗都令人激动战栗。自豪吧，在这间渺小的、玻璃辉煌的教室里，你是将军，你是议长，你就是缔造者与胜利者。",
+                "     ",
+                "Academic rigor? Technological frontiers? Social currents? Cultural tides? Ethical dilemmas? Environmental crises? Here, in classroom synapses sparking with primal fire, humanity's certainties and doubts, passions and disdain, convictions and rejections ignite through fleeting neural flashes.Mariners'welfare reforms? Bicycle-sharing system upgrades? Noxian diplomatic strategies? Zaun's geochemical mysteries? Print media's digital demise? Seminar champions shine brightest—silver-tongued debaters weaving logic, honeyed rhetoricians spinning narratives, even chaos-weavers arguing with conviction.Words cascade from vibrating tongues, teeth, palates, nasal cavities, crystallizing into contested truths through invisible collisions. Toppling entrenched ideologies thrills more than any battlefield triumph. Rejoice—within these glass-encased walls, you reign as general, chancellor, architect, victor."
+            ],
+            "athe": [
+                "“呲呲呲，喂，你做笔记了吗？”",
+                "“做了。你没做？据说教授讲的要全背。这门课的考试简直是地狱难度。”",
+                "“受够了。早知道不选这课了。本来以为好混呢。”",
+                "“其实有个混的办法，只是有风险。”",
+                "“什么办法？”",
+                "“考试的时候你交白卷。教授质问你的时候，你就说以太学的答案当然都写在以太里了。”",
+                "“哦！！你小子真是个天才！”",
+                "     ",
+                "Psst! Hey, you took notes?",
+                "Yep. You didn't? Rumor says you gotta memorize every word he spits. This exam's straight from hell.",
+                "Ugh. Regretting this already. Thought it'd be an easy credit.",
+                "Got a sketchy way to skate by. Risky though.",
+                "Spill.",
+                "Hand in a blank exam. When he flips, say: Etherology answers exist purely in the ethereal plane.",
+                "Ohhh!! You're a freakin' genius!"
+            ],
+            "courseart": [
+                "▶课程内容",
+                "装饰艺术简介",
+                "几何与对称美的巅峰：以皮尔特沃夫为例",
+                "自然、平衡、和谐：艾欧尼亚纹样赏析",
+                "黄金的往日造影：重访恕瑞玛建筑",
+                "冰雪王国，粗犷之美：弗雷尔卓德冰屋",
+                "从海中捞起伤疤、鱼钩和啤酒：比尔吉沃特风格",
+                "艺术设计作业展",
+                "     ",
+                "▶Course Content",
+                "Decorative Arts Introduction",
+                "The Pinnacle of Geometric & Symmetrical Beauty: Piltover Case Study",
+                "Nature, Balance, Harmony: Ionian Pattern Appreciation",
+                "Golden Relics of the Past: Revisiting Shuriman Architecture",
+                "Frostborn Kingdom's Rugged Beauty: Freljord Ice Dwellings",
+                "Salvaging Scars, Fishhooks & Beer: Bilgewater Style",
+                "Art & Design Project Exhibition"
+            ],
+            "mathclass": [
+                "艾比盖尔总是哭哭啼啼的。她走到哪儿，哪儿就下雨。她先去了大姐家。大姐是个银匠，家里到处都是亮闪闪的银罐子。艾比盖尔摸了摸，羡慕地说：“多漂亮啊！”豆子大的、圆滚滚的雨珠立刻落了下来，银器很快都变黑了。大姐气急败坏地说：“艾比盖尔，走吧！你让银子都变坏了！”她伤心地去了二哥家。二哥是名花农，田里种满了鲜花。她住了一天，绵绵细雨落了一天。二哥说：“好啊，这才长得茂盛！”她又住了一天，连丝细雨落了一天。二哥说：“看花开得多漂亮！”她又住了一天，毛毛细雨落了一天。二哥犯难地对她说：“艾比盖尔，你走吧！花都快淹死了！”最后，她哭着去了小妹妹家。小妹妹说：“好吧，艾比盖尔姐姐，你跟我走吧！我的船就要出海，但愿我们不会遇上狼鲨！”姐妹俩一起跳上了崭新的捕鱼船。天气很晴朗，白腹海鸟成群地在乌青的大海上盘旋。沙丁鱼疯了似的往他们的渔网里撞，鲨鱼快速从他们船底逃开。小妹妹说：“谁说带着你就会倒霉？弄不好蛇母喜欢你呢！”忽然，姐俩看到明亮的天际线上出现了一块巨大的影子。就在表匠擦亮齿轮的那么会儿功夫，影子就到了她们眼前。是飓风！天空和海洋变了脸，阴云密布，暴雨滂沱，渔船被撕成了碎片。凌厉的、恐怖的风暴，让艾比盖尔喘不过气来，她哭着大喊：“迦娜，带走我吧！我除了雨水和不幸还剩下了什么呀！”你们知道吗？即使是在毁天灭地的飓风中，也有一丝温和宽容的风，来自于迦娜女神。她降临在艾比盖尔面前，温柔地说：“不要怕，小女孩，我将送你回家。”艾比盖尔的家在哪里呢？大姐家的门关得紧紧的；二哥忙忙碌碌，一眼也不看她；小妹妹睁着眼睛，在海底的深处说：“姐姐，来吧！”她哭了，对迦娜说：“女神，我没有家。”迦娜说：“噢，那么，我知道你的家在哪里。”艾比盖尔跟随那缕清风，走下楼梯。一层，又一层。多么美丽，多么绚烂，多么令人目眩神迷。于是，艾比盖尔住了下来。祖安开始下雨了。",
+                "——《矿坑区故事集》",
+                "     ",
+                "Aibigale cried and sniffled. Wherever she went, rain followed.First she visited Big Sister, a silversmith. Silver pots gleamed everywhere.“How pretty!” Aibigale touched one. Plump raindrops fell. Silver turned black.“Aibigale, go! You ruin silver!” Big Sister scowled.Next she visited Second Brother, a flower farmer. She stayed one day—rain drizzled.“Good! Flowers grow!” he cheered.She stayed another—rain misted.“See the blooms!” he smiled.She stayed another—rain sprinkled.“Aibigale, go! Flowers drown!” he sighed.Lastly, she visited Little Sister.“Come,” said Little Sister, “my fishing boat sails today. Pray we avoid wolf-sharks!”Sun blazed. White-bellied seabirds circled. Sardines leapt into their nets like madness. Sharks fled beneath their hull.“Who says you bring gloom? Nagakabouros might favor you!”Then—a shadow on the horizon.Clink! (A watchmaker polished gears.)The shadow grew. A hurricane! Sky turned iron-gray. Waves smashed their boat to splinters.“JANNA, TAKE ME!” Aibigale sobbed in the storm. “I've only rain and ruin!”But even hurricanes hold one gentle breeze.Janna appeared: “Fear not, child. I'll take you home.”Where was home?Big Sister's door stayed shut.Second Brother busied his eyes away.Little Sister whispered from seabed depths: “Sister, come.”“Goddess… I've no home,” Aibigale wept.“Ah,” said Janna, “I know where.”Down stairs they went—one flight, another.So beautiful! So dazzling! So… dizzying.Aibigale stayed.Zaun began to rain.",
+                "——《Tales from the Fissures》"
+            ],
+            "afternoon": [
+                "“中午好，助教先生。没打扰您吧？”",
+                "“不，没有。文件？”",
+                "“对，三份。需要黑默丁格签字。”",
+                "“我会及时提醒教授。”",
+                "“谢谢。天哪，看这帮学生。晒太阳，野餐，下象棋……多美好的下午，雨季刚过，阳光明媚。谁乐意授课和上课？简直是虚掷光阴。”",
+                "“的确。”",
+                "“这幅场景，或许在您的家乡并不多见？”",
+                "“……”",
+                "“抱歉，您知道我无意冒犯。让我们都享受阳光，好吗？再见，助教先生。别忘了提醒黑默丁格院长。”",
+                "     ",
+                "Good afternoon, Mr. Assistant. Am I bothering you?",
+                "No,no.Documents?",
+                "Yep, three copies. Needs Heimerdinger's signature.",
+                "I'll notify him.",
+                "Thanks. Look at these students—sunbathing, picnics, chess… What a perfect afternoon. Rainy season's over, sun's finally out. Who wants to teach or study? What's a waste of daylight.",
+                "So it seems.",
+                "Scenes like this… not common back where you're from, huh?",
+                "……",
+                "Sorry, you know I didn't mean anything by it. Let's just enjoy the sun, yeah? Later, Mr. Assistant. Don't forget Heimerdinger."
+            ],
+            "lookathim": [
+                "“工程学作业逼得我快疯了，你都过来蹭饭了，就准备这么干看着吗？”",
+                "“呃？不然呢？我学经济的。”",
+                "“帮我描图也行。求你了，我没时间搞这些，我得复习。再挂科我就去跳海。”",
+                "“好吧好吧，既然你都这么说了。真有那么难写吗？昨晚在聚会上遇见了一个你们系的学生，聊了几句，他都在看下学期的教材了。”",
+                "“谁那么装？妈的，我知道了，肯定是杰斯·塔利斯。”",
+                "“对对对，他是叫杰斯。”",
+                "“抛开他吧，哥们，要和他比的话，你不如现在就去批发些石头，防止我从海里漂起来。”",
+                "“你放心吧，兄弟，我会用A+级石头。”",
+                "     ",
+                "This engineering homework's driving me nuts! You're here mooching my food, and you're just gonna sit there?!",
+                "Huh? What else? I'm an Econ major.",
+                "Trace my diagrams then! Please! I've got zero time—gotta cram. Fail again and I'm jumping into the ocean.",
+                "Alright, alright. But is it really that bad? Met one of your nerds at a party last night—guy's already reading next semester's textbooks.",
+                "Ugh, who's that tryhard? Oh wait—Jayce Talis, right?",
+                "Yep. Jayce something.",
+                "Forget him, bro. If you compare me to Jayce, just go bulk-buy rocks now to weigh my corpse down when I float up.",
+                "Don't worry, man. I'll get premium-grade rocks."
+            ],
+            // 添加其他留言...
+        };
+
+        let isChinese = true;
+
+  function toggleLanguage() {
+            isChinese = !isChinese;
+            document.querySelectorAll('[data-zh]').forEach(element => {
+                element.textContent = isChinese ? 
+                    element.dataset.zh : 
+                    element.dataset.en;
+            });
+        }
+
+        function showMessage(type) {
+            const content = messages[type].join("<br>");
+            document.getElementById('modalContent').innerHTML = content;
+            document.querySelector('.modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.querySelector('.modal').style.display = 'none';
+        }
+
+        // 课程填写示例（用户需要修改的部分）
+        /*
+        <td>
+            <div class="course-item">
+                <a href="#" onclick="showMessage('computer-course')" 
+                   data-zh="计算机课" 
+                   data-en="Computer Science">计算机课</a>
+                <a href="#" onclick="showMessage('lecture')"
+                   data-zh="讲座" 
+                   data-en="Lecture">讲座</a>
+                <!-- 其他课程信息 -->
+            </div>
+        </td>
+        */
+    </script>
+</body>
+</html>
